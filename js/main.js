@@ -44,12 +44,12 @@
 
     function logIn(name, password){
           Parse.User.logIn(name, password, {
-            success: function(user) {
-              // Do stuff after successful login.
-            },
-            error: function(user, error) {
-              // The login failed. Check error to see why.
-            }
+           success: function(result) {
+              window.location = "dashboard.html";
+           },
+           error: function(error) {
+              document.getElementById("error").innerHTML = "Try again."
+           }
         });
     }
 
@@ -73,10 +73,10 @@
       var query = new Parse.Query("Student");
       query.find({
            success: function(result) {
-              returned = result;
+              
            },
            error: function(error) {
-              returned = error;
+              
            }
         });
         return returned;
@@ -96,6 +96,12 @@
     }
 
 
+
+function verify(){
+  if(!Parse.User.current){
+    window.location = "login.html";
+  }
+}
 
 
 
