@@ -53,6 +53,11 @@
         });
     }
 
+    function logOut(){
+      Parse.User.logOut();
+      window.location = "login.html";
+    }
+
 
 //Student Functionality
     function addStudentToEvent(student, event){
@@ -98,9 +103,11 @@
 
 
 function verify(){
-  if(!Parse.User.current){
+  if(!Parse.User.current()){
     window.location = "login.html";
+
   }
+
 }
 
 

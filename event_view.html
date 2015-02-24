@@ -25,6 +25,7 @@
 
     <!-- Custom Fonts -->
     <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
     <!--Parse JS -->
     <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.4.min.js"></script>
@@ -35,6 +36,7 @@
     <script type = "text/javascript">
         window.onload = verify();
     </script>
+
 
 
 </head>
@@ -58,9 +60,7 @@
             </div>
 
             <!-- Portal Top Bar -->
-           <ul class="nav navbar-top-links navbar-right">
-                
-                
+            <ul class="nav navbar-top-links navbar-right">
 
                 <!-- User Management -->
                 <li class="dropdown">
@@ -84,12 +84,12 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        <li><a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
+                        <li><a href="dashboard.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
                         <li>
                             <a href="#"><i class="fa fa-group fa-fw"></i> Student List<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li><a href="student_list.html">View</a></li>
-    							<li><a href="#">Upload</a></li>
+    							<!--<li><a href="#">Upload</a></li>-->
     							<li><a href="#">Export</a></li>
                             </ul>
                         </li>
@@ -97,7 +97,7 @@
                             <a href="#"><i class="fa fa-book fa-fw"></i> Events<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li><a href="#">Add</a></li>
-                                <li><a href="event_list.html">View</a></li>
+                                <li><a href="#">View</a></li>
                                 <li><a href="#">Export PDF</a></li>
                                 <li><a href="#">View Rulebook <i class="fa fa-external-link fa-fw"></i></a></li>
                             </ul>
@@ -136,86 +136,143 @@
 
         <!-- Page Content -->
         <div id="page-wrapper">
-           
-            <!-- Page Title -->
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">Dashboard</h1>
-                    </div>
-                </div>
-            </div>
+                    <br>
+                    <ol class="breadcrumb">
+                        <li class="active" id = "studentName1"></li>
+                    </ol>
 
-            <!-- Dashboard Score -->
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-green">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="huge">100</div>
-                                        <div>Camofrosh</div><br />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <span class="pull-left">Freshman</span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-red">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="huge">200</div>
-                                        <div>Sophomore Lifesavers</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <span class="pull-left">Sophomores</span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-yellow">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="huge">300</div>
-                                        <div>Jurassic Juniors</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <span class="pull-left">Juniors</span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="huge">400</div>
-                                        <div>Senior Superstition</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <span class="pull-left">Seniors</span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+                    <h2 id = "eventName" style = "padding: 15px"></h1>
+                    
+                    <!-- Student Profile -->
+                    <div class="col-md-6" id = "eventTable">
+                           <table class='table table-bordered text-center'>
+                            <tr class='active'>
+                                <td><strong>Start Time</strong></td>
+                                <td><strong>End Time</strong></td>
+                                <td><strong>Date</strong></td>
+                                <td><strong>Type</strong></td>
+                            </tr>
+                            <tr>
+                                <td id = "startTime"></td>
+                                <td id = "endTime"></td>
+                                <td id = "date"></td>
+                                <td id = "type"></td>
+                            </tr>  
+                        </table>
+
+                    </div>
+                    <div class="alert alert-info col-md-6" role="alert" style = "visibility: hidden; text-align:center" id = "add">
+                        <i class="fa fa-user-plus"></i> &nbsp;&nbsp;
+                        <a href = "#">Add more participants!</a>
+                    </div>
+                    <!-- Student Event Details -->
+                     <div class="col-md-6" id ="pDiv">
+                            <h4><b>Participants </b></h4>
+                            <br>
+
+                            <table class="table table-striped" id = "participants">
+                                <tr class="active text-strong">
+                                    <td><b>Student Number</b></td>
+                                    <td><b>Name</b></td>
+                                    <td><b>Gen</b></td>
+                                    <td><b>HR</b></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <script type = "text/javascript">
+
+                        function getParameterByName(name) {
+                            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+                            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                                results = regex.exec(location.search);
+                            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+                        }
+
+
+
+                        var eventTable = document.getElementById("eventTable").getElementsByTagName('tbody')[0],
+                            participants = document.getElementById("participants").getElementsByTagName('tbody')[0],
+                            eventId = getParameterByName('event'),
+                            q = new Parse.Query("Event");
+
+                        
+
+                        q.get(eventId, {
+                            success: function(event){
+                                document.getElementById("eventName").innerHTML = event.get("eventName");
+                                document.getElementById("startTime").innerHTML = event.get("startTime");
+                                document.getElementById("endTime").innerHTML = event.get("endTime");
+                                document.getElementById("type").innerHTML = event.get("type");
+                                document.getElementById("date").innerHTML = event.get("date");
+
+                            },
+                            error: function(){
+                                //Error functionality 
+                            }
+                        });
+
+
+
+
+                        //Participants 
+                        var query = new Parse.Query("SignUp");
+                      
+                        query.equalTo('eventId', eventId);
+                        query.find({
+                            success: function(result) {
+                            for(var i = 0; i < result.length; i++){
+                                var signUp = result[i];
+
+                  
+
+
+                                var q = new Parse.Query("Student");
+                                q.get(signUp.get("studentId"), {
+
+                                    success: function(student){
+                                        var row = participants.insertRow(-1);
+                                        var studentNum = row.insertCell(0);
+                                        studentNum.innerHTML = student.get("ID");
+                                        var studentName = row.insertCell(1);
+                                        studentName.innerHTML = student.get("firstName") + " " + student.get("lastName");
+                                        var gender = row.insertCell(2);
+                                        gender.innerHTML = student.get("Gen");
+                                        var hr = row.insertCell(3);
+                                        hr.innerHTML = student.get("HR");
+                                    }
+
+                                });
+
+                            }
+
+                                  var q2 = new Parse.Query("Event");
+                                  q2.get(eventId, {
+                                     success: function(event){
+                                        if(result.length < parseInt(event.get("reqNumStudents"))){
+                                            document.getElementById("add").style.visibility = "visible";
+                                        }
+                                     }
+                                  });
+
+                            }
+                        
+
+                        });
+                    </script>
+
+
+
+   
+                    
+
+            </div>
+            <!-- /.container-fluid -->
         </div>
         <!-- /#page-wrapper -->
 
@@ -233,8 +290,6 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="js/sb-admin-2.js"></script>
-
-
 
 </body>
 
