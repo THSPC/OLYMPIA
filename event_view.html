@@ -166,7 +166,7 @@
                     </div>
                     <div class="alert alert-info col-md-6" role="alert" style = "visibility: hidden; text-align:center" id = "add">
                         <i class="fa fa-user-plus"></i> &nbsp;&nbsp;
-                        <a href = "#">Add more participants!</a>
+                        <a data-toggle="modal" data-target="#myModal"style = "cursor: pointer">Add more participants!</a>
                     </div>
                     <!-- Student Event Details -->
                      <div class="col-md-6" id ="pDiv">
@@ -185,6 +185,34 @@
                     </div>
 
 
+
+
+            <!--Add Student to Event Modal --> 
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Choose a student.</h4>
+                                        </div>
+                                        <div class="modal-body" id = "studentList">
+                                            <table class="table table-striped" id = "modalStudents">
+                                                <tr class="active text-strong">
+                                                    <td><b>Student Number</b></td>
+                                                    <td><b>Name</b></td>
+                                                    <td><b>Gen</b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+
                     <script type = "text/javascript">
 
                         function getParameterByName(name) {
@@ -195,14 +223,14 @@
                         }
 
 
-
+                        //Variable declarations
                         var eventTable = document.getElementById("eventTable").getElementsByTagName('tbody')[0],
                             participants = document.getElementById("participants").getElementsByTagName('tbody')[0],
                             eventId = getParameterByName('event'),
                             q = new Parse.Query("Event");
 
                         
-
+                        //Fill in events table
                         q.get(eventId, {
                             success: function(event){
                                 document.getElementById("eventName").innerHTML = event.get("eventName");
@@ -231,26 +259,26 @@
 
                   
 
-
+                                //Fill in participants table
                                 var q = new Parse.Query("Student");
                                 q.get(signUp.get("studentId"), {
 
                                     success: function(student){
                                         var row = participants.insertRow(-1);
                                         var studentNum = row.insertCell(0);
-                                        studentNum.innerHTML = student.get("ID");
+                                            studentNum.innerHTML = student.get("ID");
                                         var studentName = row.insertCell(1);
-                                        studentName.innerHTML = student.get("firstName") + " " + student.get("lastName");
+                                            studentName.innerHTML = student.get("firstName") + " " + student.get("lastName");
                                         var gender = row.insertCell(2);
-                                        gender.innerHTML = student.get("Gen");
+                                            gender.innerHTML = student.get("Gen");
                                         var hr = row.insertCell(3);
-                                        hr.innerHTML = student.get("HR");
+                                            hr.innerHTML = student.get("HR");
                                     }
 
                                 });
 
                             }
-
+                                //Check if more students need to be added to the event
                                   var q2 = new Parse.Query("Event");
                                   q2.get(eventId, {
                                      success: function(event){
@@ -264,6 +292,95 @@
                         
 
                         });
+
+
+
+                        //Populate modal
+                        window.onload = function(){
+                            var user  = Parse.User.current(),
+                            grade = user.get('role');
+                            table = document.getElementById('modalStudents').getElementsByTagName('tbody')[0];
+
+                             var query = new Parse.Query("Student");
+                             query.limit(1000);
+                             query.equalTo('GR', grade);
+                             query.find({
+                                   success: function(result) {
+                                            for(var i = 0; i < result.length; i++){
+                                                student = result[i];
+                                                var row = table.insertRow(i+1);
+                                                    row.id = student.get('ID');
+                                                    row.style.cursor = "pointer";
+                                                    row.onmouseover = function(){
+                                                        this.style.color = "#19B5FE";
+                                                    }
+                                                    row.onmouseout = function(){
+                                                        this.style.color = "black";
+                                                    }
+                                                    row.onclick = function(){
+                                                        addStudentToEvent(this.id);
+                                                    }
+                                                var num = row.insertCell(0);
+                                                    num.innerHTML = student.get('ID');
+                                                var name = row.insertCell(1);
+                                                    name.innerHTML = student.get('firstName') + ' ' + student.get('lastName');
+                                                var gen = row.insertCell(2);
+                                                    gen.innerHTML = student.get('Gen');
+
+                                    }
+                                }
+                            });
+                        }
+
+
+                        //For when a student is clicked in the modal
+                        function addStudentToEvent(id){
+                        var query = new Parse.Query("SignUp");
+                        query.equalTo('eventId', eventId);
+                        query.find({
+                            success: function(result) {
+                                //Check if more students need to be added to the event
+                                  var q2 = new Parse.Query("Event");
+                                  q2.get(eventId, {
+                                     success: function(event){
+                                        if(result.length < parseInt(event.get("reqNumStudents"))){
+                                              var q = new Parse.Query("Student");
+                                              q.equalTo("ID", id);
+                                            q.find({
+                                                success: function(students){
+                                                    //Add student to event 
+                                                    //  console.log(student[0]);
+                                                    var student = students[0];
+                                                        var signUp = new SignUp();
+                                                            signUp.set('studentId', student.id);
+                                                            signUp.set('eventId', eventId);
+                                                        signUp.save({
+                                                            success: function(object) {
+                                                                document.getElementById(id).style.backgroundColor = "#2ECC71";
+
+                                                            },
+                                                            error: function(model, error) {
+                                                                //insert error functionality 
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                        }else{
+                                            document.getElementById(id).style.backgroundColor = "#F64747";
+                                        }
+                                     }
+                                  });
+
+                            }
+                        
+
+                        });
+
+                        }
+
+
+
+
                     </script>
 
 

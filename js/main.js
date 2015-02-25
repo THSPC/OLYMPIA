@@ -60,9 +60,11 @@
 
 
 //Student Functionality
-    function addStudentToEvent(student, event){
+  /*  function addStudentToEvent(studentId, eventId){
         var signUp = new SignUp();
-         signUp.save({studentId: student.get("objectId"), eventId: event.get("objectId")}, {
+        signUp.set('studentId', studentId);
+        signUp.set('eventId', eventId);
+         signUp.save({
             success: function(object) {
               //insert success functionality
             },
@@ -71,7 +73,7 @@
             }
     });
 
-    }
+    }*/
 
   function getStudents(){
       var returned;
