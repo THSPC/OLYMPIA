@@ -190,6 +190,56 @@
                     </div>
 
 
+                    <!-- Student Event Details -->
+                    <div class="col-md-6">
+                        <h4><b>Events</b></h4>
+                        <br>
+                        <div class="alert alert-info" role="alert" style = "text-align: center">
+                            <i class="fa fa-plus"></i> &nbsp;
+                            <a data-toggle="modal" data-target="#myModal"style = "cursor: pointer" >Add this student to more events!</a> 
+                        </div>
+
+                        <table class="table table-striped" id = "events">
+                            <tr class="active text-strong">
+                                <td><b>ID</b></td>
+                                <td><b>Event Name</b></td>
+                                <td><b>Date</b></td>
+                                <td><b>Time</b></td>
+                            </tr>
+                            <tr>
+                        </table>
+                    </div>
+
+                </div>
+
+
+                 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Choose an event.</h4>
+                                        </div>
+                                        <div class="modal-body" id = "studentList">
+                                            <table class="table table-striped" id = "modalEvents">
+                                                <tr class="active text-strong">
+                                                    <td><b>Event ID</b></td>
+                                                    <td><b>Name</b></td>
+                                                    <td><b>Time</b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                
+                            </div>
+
+
+
                     <script type = "text/javascript">
 
                         function getParameterByName(name) {
@@ -200,56 +250,150 @@
                         }
 
 
+                        //Variables
+                        var profile     =     document.getElementById("studentProfile"),
+                            query       =     new Parse.Query("Student"),
+                            q2          =     new Parse.Query("SignUp"), 
+                            studentID   =     getParameterByName('student'),
+                            events      =     document.getElementById("events").getElementsByTagName('tbody')[0],
+                            studentId;
 
-                        var profile = document.getElementById("studentProfile");
-                        var query = new Parse.Query("Student");
-                        var studentID = getParameterByName('student');
+
+                        
                         query.equalTo('ID', studentID);
                         query.find({
+                            //Fills out student profile
                             success: function(result) {
                                 student = result[0];
+                                studentId = student.id;
                                 document.getElementById("studentName1").innerHTML  = student.get('firstName') + " " + student.get('lastName');
                                 document.getElementById("studentName2").innerHTML  = student.get('firstName') + " " + student.get('lastName');
                                 document.getElementById("studentID").innerHTML = student.get("ID");
                                 document.getElementById("gender").innerHTML = student.get("Gen");
                                 document.getElementById("grade").innerHTML = student.get("GR");
                                 document.getElementById('homeroom').innerHTML = student.get("HR");
-                                
+
+
+                                //Finds student events and fills out events table
+                                q2.equalTo('studentId', student.id);
+                                q2.find({
+                                    success: function(result){
+                                        for(var i = 0; i < result.length; i++){
+                                            var signUp = result[i];
+
+                                            var query = new Parse.Query("Event");
+                                            
+                                            query.get(signUp.get('eventId'), {
+                                                success: function(event){
+                                                   //console.log(e);
+                                                   var row = events.insertRow(-1);
+                                                   var id = row.insertCell(0);
+                                                       id.innerHTML = event.get("eventNum");
+                                                   var name = row.insertCell(1);
+                                                       name.innerHTML = event.get("eventName");
+                                                   var date = row.insertCell(2);
+                                                       date.innerHTML = event.get("date");
+                                                   var time = row.insertCell(3);
+                                                       time.innerHTML = event.get("startTime");
+
+
+
+                                                }
+                                            });
+
+
+                                      }
+                                    }
+                                });
 
 
                             }
                         });
-                       /* profile.innerHTML = "<h4><b>Student Profile</b></h4><br>
 
-                     
-                        "*/
+                         //Populate modal
+                         window.onload = function(){
+                            var table = document.getElementById('modalEvents').getElementsByTagName('tbody')[0],
+                                query = new Parse.Query("Event");
+                                query.find({
+                                    success: function(result){
+                                        for(var i = 0; i < result.length; i++){
+                                                event = result[i];
+                                                var row = table.insertRow(-1);
+                                                    row.id = event.id;
+                                                    row.style.cursor = "pointer";
+                                                    row.onmouseover = function(){
+                                                        this.style.color = "#19B5FE";
+                                                    }
+                                                    row.onmouseout = function(){
+                                                        this.style.color = "black";
+                                                    }
+                                                    row.onclick = function(){
+                                                        addEventToStudent(this.id);
+                                                    }
+                                                var num = row.insertCell(0);
+                                                    num.innerHTML = event.get('eventNum');
+                                                var name = row.insertCell(1);
+                                                    name.innerHTML = event.get('eventName')
+                                                var startTime = row.insertCell(2);
+                                                    startTime.innerHTML = event.get('startTime');
+
+                                        }   
+                                    }
+                                });
+
+
+                         }
+
+                         //Add event to student
+                            //More complicated because need to check if the event is full from here 
+                        function addEventToStudent(id){
+                            var query = new Parse.Query("SignUp");
+                            query.equalTo('eventId', id);
+                            query.find({
+                                success: function(result) {
+                                    //Check if more students need to be added to the event
+                                    var signUp = result[0];
+                                      var q2 = new Parse.Query("Event");
+                                      q2.get(id, {
+                                         success: function(event){
+                                            if(result.length < parseInt(event.get("reqNumStudents"))){
+                                                         var signUp = new SignUp();
+                                                                signUp.set('studentId', studentId);
+                                                                signUp.set('eventId', event.id);
+                                                            signUp.save({
+                                                                success: function(object) {
+                                                                    document.getElementById(id).style.backgroundColor = "#2ECC71";
+
+                                                                },
+                                                                error: function(model, error) {
+                                                                    //insert error functionality 
+                                                                }
+                                                            });
+                                                        }else{
+                                                            document.getElementById(id).style.backgroundColor = "#F64747";
+                                                         }
+                                                    }
+                                                });
+                                            
+                                            
+                                         }
+                                      });
+
+                                }
+                            
+
+                  
+
+
+
+
+
+
+
                     </script>
 
 
 
-                    <!-- Student Event Details -->
-                    <div class="col-md-6">
-                        <h4><b>Events</b></h4>
-                        <br>
-                        <div class="alert alert-info" role="alert">Yuya is currently not in any events. <a href="">Add</a> one now!</div>
-                        <div class="alert alert-danger" role="alert">This student is <b>not eligible</b> to participate in any Olympic events.</div>
-
-                        <table class="table table-striped">
-                            <tr class="active text-strong">
-                                <td><b>ID</b></td>
-                                <td><b>Event Name</b></td>
-                                <td><b>Date</b></td>
-                                <td><b>Time</b></td>
-                            </tr>
-                            <tr>
-                                <td>23</td>
-                                <td><a href="">Computer Programming</a> </td>
-                                <td>4 - 23 - 2015</td>
-                                <td>10:15 - 11:15</td>
-                            </tr>   
-                        </table>
-                    </div>
-                </div>
 
             </div>
             <!-- /.container-fluid -->
